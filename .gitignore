@@ -1,0 +1,63 @@
+﻿# Visual Studio files
+.vs/
+*.user
+*.suo
+*.sln.cache
+*.VC.db
+*.code-workspace
+
+# Binaries and temporary files
+bin/
+obj/
+out/
+*.exe
+*.dll
+*.pdb
+*.log
+*.cache
+*.temp
+*.TMP
+*.bak
+*.swp
+
+# Environment settings
+appsettings.Development.json
+secrets.json
+.env
+
+# NuGet packages and dependencies
+packages/
+*.nupkg
+project.lock.json
+project.assets.json
+
+# ASP.NET build files
+node_modules/
+wwwroot/node_modules/
+yarn.lock
+package-lock.json
+
+# Docker
+*.container.cache
+**/[Dd]ocker*
+
+# IDE and tool-specific files
+.idea/
+*.ipch
+*.pidb
+*.sdf
+*.tlog
+*.VC.opendb
+
+# Logs and debugging
+logs/
+log/
+**/*.log
+
+# Publish
+publish/
+*.Publish.xml
+
+# Miscellaneous
+Thumbs.db
+.DS_Store
