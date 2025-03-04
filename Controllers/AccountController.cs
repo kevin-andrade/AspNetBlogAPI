@@ -3,6 +3,7 @@ using Blog.Extensions;
 using Blog.Models;
 using Blog.Services;
 using Blog.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PasswordGenerator;
@@ -15,6 +16,7 @@ namespace Blog.Controllers
         [HttpPost("v1/accounts/")]
         public async Task<IActionResult> PostAsync(
             [FromBody] RegisterViewModel model,
+            [FromServices] EmailService emailService,
             [FromServices] AppDataContext context)
         {
             if (!ModelState.IsValid)
@@ -38,6 +40,15 @@ namespace Blog.Controllers
                 .Next();
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password); // Entering User Password
 
+            bool emailSend = emailService.Send(
+                user.Name,
+                user.Email,
+                "Welcome to the Blog!",
+                $"Your password is <strong>{password}</strong>");
+
+            if (!emailSend)
+                return StatusCode(500, "01KE05 - Erro ao enviar o e-mail de boas-vindas.");
+
             try
             {
                 await context.Users.AddAsync(user);
@@ -46,7 +57,6 @@ namespace Blog.Controllers
                 return Ok(new ResultViewModel<dynamic>(new
                 {
                     user = user.Email,
-                    password
                 }));
             }
             catch (DbUpdateException)
@@ -55,6 +65,7 @@ namespace Blog.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("v1/accounts/login")]
         public async Task<IActionResult> LoginAsync(
             [FromBody] LoginViewModel model,

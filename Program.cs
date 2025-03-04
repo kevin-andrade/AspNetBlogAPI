@@ -31,7 +31,7 @@ void LoadConfiguration(WebApplication app)
     Configuration.JwtKey = app.Configuration.GetValue<string>("JwtKey");
 
     var smtp = new Configuration.SmtpConfiguration();
-    app.Configuration.GetSection("SmtConfiguration").Bind(smtp);
+    app.Configuration.GetSection("Smtp").Bind(smtp);
     Configuration.Smtp = smtp;
 }
 
@@ -70,4 +70,5 @@ void ConfigureServices(WebApplicationBuilder builder)
 {
     builder.Services.AddDbContext<AppDataContext>();
     builder.Services.AddTransient<TokenService>();
+    builder.Services.AddTransient<EmailService>();
 }
