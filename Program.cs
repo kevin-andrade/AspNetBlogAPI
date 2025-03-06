@@ -16,6 +16,7 @@ LoadConfiguration(app);
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.
 app.MapControllers();
 
 app.Run();
