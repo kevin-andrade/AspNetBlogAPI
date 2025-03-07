@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PasswordGenerator;
+using System.Text.RegularExpressions;
 
 namespace Blog.Controllers
 {
@@ -66,7 +67,6 @@ namespace Blog.Controllers
             }
         }
 
-        [Authorize]
         [HttpPost("v1/accounts/login")]
         public async Task<IActionResult> LoginAsync(
             [FromBody] LoginViewModel model,
@@ -98,6 +98,49 @@ namespace Blog.Controllers
             {
                 return StatusCode(500, new ResultViewModel<string>("Internal server error"));
             }
+        }
+
+        [Authorize]
+        [HttpPost("v1/accounts/upload-image")]
+        public async Task<IActionResult> UploadImageAsync(
+            [FromBody] UploadImageViewModel model,
+            [FromServices] AppDataContext context)
+        {
+            var fileName = $"{Guid.NewGuid().ToString()}.jpg";
+            var data = new Regex(@"data:image\/[a-z]+;base64,")
+                .Replace(model.Base64Image, "");
+            var bytesImage = Convert.FromBase64String(data);
+
+            try
+            {
+                await System.IO.File.WriteAllBytesAsync($"wwwroot/images/{fileName}", bytesImage);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new ResultViewModel<string>("Internal server error"));
+            }
+
+            var user = await context
+                .Users
+                .FirstOrDefaultAsync(x => x.Email == User.Identity.Name);
+
+            if (user == null)
+                return NotFound(new ResultViewModel<User>("User not found"));
+
+            user.Image = $"https://localhost:0000/images/{fileName}"; 
+
+            try
+            {
+                context.Users.Update(user);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new ResultViewModel<string>("Internal server error"));
+            }
+
+            return Ok(new ResultViewModel<string>("Image altered successfully"));
+
         }
     }
 }
