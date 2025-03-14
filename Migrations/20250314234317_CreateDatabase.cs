@@ -79,8 +79,8 @@ namespace Blog.Migrations
                     Summary = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: false),
                     Body = table.Column<string>(type: "TEXT", nullable: false),
                     Slug = table.Column<string>(type: "VARCHAR(80)", maxLength: 80, nullable: false),
-                    CreateDate = table.Column<DateTime>(type: "DATETIME", nullable: false, defaultValue: new DateTime(2025, 2, 20, 20, 30, 10, 999, DateTimeKind.Utc).AddTicks(5576)),
-                    LastUpdateDate = table.Column<DateTime>(type: "DATETIME", nullable: false, defaultValue: new DateTime(2025, 2, 20, 20, 30, 10, 999, DateTimeKind.Utc).AddTicks(6085)),
+                    CreateDate = table.Column<DateTime>(type: "DATETIME", nullable: false, defaultValue: new DateTime(2025, 3, 14, 23, 43, 17, 415, DateTimeKind.Utc).AddTicks(2966)),
+                    LastUpdateDate = table.Column<DateTime>(type: "DATETIME", nullable: false, defaultValue: new DateTime(2025, 3, 14, 23, 43, 17, 415, DateTimeKind.Utc).AddTicks(3187)),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     AuthorId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -102,24 +102,24 @@ namespace Blog.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RoleUser",
+                name: "UserRole",
                 columns: table => new
                 {
-                    RolesId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<int>(type: "int", nullable: false)
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoleUser", x => new { x.RolesId, x.UsersId });
+                    table.PrimaryKey("PK_UserRole", x => new { x.RoleId, x.UserId });
                     table.ForeignKey(
-                        name: "FK_RoleUser_Role_RolesId",
-                        column: x => x.RolesId,
+                        name: "FK_UserRole_RoleId",
+                        column: x => x.RoleId,
                         principalTable: "Role",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_RoleUser_User_UsersId",
-                        column: x => x.UsersId,
+                        name: "FK_UserRole_UserId",
+                        column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -176,11 +176,6 @@ namespace Blog.Migrations
                 column: "TagId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoleUser_UsersId",
-                table: "RoleUser",
-                column: "UsersId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_User_Email",
                 table: "User",
                 column: "Email",
@@ -191,6 +186,11 @@ namespace Blog.Migrations
                 table: "User",
                 column: "Slug",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRole_UserId",
+                table: "UserRole",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -199,7 +199,7 @@ namespace Blog.Migrations
                 name: "PostTag");
 
             migrationBuilder.DropTable(
-                name: "RoleUser");
+                name: "UserRole");
 
             migrationBuilder.DropTable(
                 name: "Tag");

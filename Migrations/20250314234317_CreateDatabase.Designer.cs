@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blog.Migrations
 {
     [DbContext(typeof(AppDataContext))]
-    [Migration("20250220203011_CreateDatabase")]
+    [Migration("20250314234317_CreateDatabase")]
     partial class CreateDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,13 +74,13 @@ namespace Blog.Migrations
                     b.Property<DateTime>("CreateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME")
-                        .HasDefaultValue(new DateTime(2025, 2, 20, 20, 30, 10, 999, DateTimeKind.Utc).AddTicks(5576))
+                        .HasDefaultValue(new DateTime(2025, 3, 14, 23, 43, 17, 415, DateTimeKind.Utc).AddTicks(2966))
                         .HasColumnName("CreateDate");
 
                     b.Property<DateTime>("LastUpdateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME")
-                        .HasDefaultValue(new DateTime(2025, 2, 20, 20, 30, 10, 999, DateTimeKind.Utc).AddTicks(6085))
+                        .HasDefaultValue(new DateTime(2025, 3, 14, 23, 43, 17, 415, DateTimeKind.Utc).AddTicks(3187))
                         .HasColumnName("LastUpdateDate");
 
                     b.Property<string>("Slug")
@@ -223,19 +223,19 @@ namespace Blog.Migrations
                     b.ToTable("PostTag");
                 });
 
-            modelBuilder.Entity("RoleUser", b =>
+            modelBuilder.Entity("UserRole", b =>
                 {
-                    b.Property<int>("RolesId")
+                    b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UsersId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("RolesId", "UsersId");
+                    b.HasKey("RoleId", "UserId");
 
-                    b.HasIndex("UsersId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("RoleUser");
+                    b.ToTable("UserRole");
                 });
 
             modelBuilder.Entity("Blog.Models.Post", b =>
@@ -276,19 +276,21 @@ namespace Blog.Migrations
                         .HasConstraintName("FK_PostTag_TagId");
                 });
 
-            modelBuilder.Entity("RoleUser", b =>
+            modelBuilder.Entity("UserRole", b =>
                 {
                     b.HasOne("Blog.Models.Role", null)
                         .WithMany()
-                        .HasForeignKey("RolesId")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_UserRole_RoleId");
 
                     b.HasOne("Blog.Models.User", null)
                         .WithMany()
-                        .HasForeignKey("UsersId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_UserRole_UserId");
                 });
 
             modelBuilder.Entity("Blog.Models.Category", b =>
