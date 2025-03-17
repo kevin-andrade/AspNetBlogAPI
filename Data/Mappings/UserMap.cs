@@ -39,12 +39,12 @@ namespace Blog.Data.Mappings
                 .HasMaxLength(255);
 
             builder.Property(c => c.Bio)
-                .IsRequired()
+                .IsRequired(false)
                 .HasColumnName("Bio")
                 .HasColumnType("TEXT");
 
             builder.Property(c => c.Image)
-                .IsRequired()
+                .IsRequired(false)
                 .HasColumnName("Image")
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(2000);

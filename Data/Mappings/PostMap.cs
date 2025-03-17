@@ -33,15 +33,8 @@ namespace Blog.Data.Mappings
                 .HasMaxLength(255);
 
             builder.Property(p => p.Body)
-                .IsRequired()
                 .HasColumnName("Body")
                 .HasColumnType("TEXT");
-
-            builder.Property(p => p.Slug)
-                 .IsRequired()
-                 .HasColumnName("Slug")
-                 .HasColumnType("VARCHAR")
-                 .HasMaxLength(80);
 
             builder.Property(p => p.Slug)
                  .IsRequired()
@@ -53,20 +46,20 @@ namespace Blog.Data.Mappings
                 .IsRequired()
                 .HasColumnName("CreateDate")
                 .HasColumnType("DATETIME")
-                .HasDefaultValue(DateTime.Now.ToUniversalTime());
+                .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(p => p.LastUpdateDate)
                 .IsRequired()
                 .HasColumnName("LastUpdateDate")
                 .HasColumnType("DATETIME")
-                .HasDefaultValue(DateTime.Now.ToUniversalTime());
+                .HasDefaultValueSql("GETUTCDATE()");
 
             //Indexes
             builder.HasIndex(p => p.Slug, "IX_Post_Slug");
 
             //Relationships
-            builder.HasOne(P => P.Author)
-                .WithMany(P => P.Posts)
+            builder.HasOne(p => p.Author)
+                .WithMany(p => p.Posts)
                 .HasConstraintName("FK_Post_Author")
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -83,7 +76,7 @@ namespace Blog.Data.Mappings
                     .HasOne<Tag>()
                     .WithMany()
                     .HasForeignKey("PostId")
-                    .HasConstraintName("FK_PostTag_PostId")
+                    .HasConstraintName("FK_PostRole_PostId")
                     .OnDelete(DeleteBehavior.Cascade),
                 tag => tag
                     .HasOne<Post>()
