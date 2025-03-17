@@ -1,6 +1,7 @@
 ﻿using Blog.Data;
 using Blog.Extensions;
 using Blog.Models;
+using Blog.Utils;
 using Blog.ViewModels;
 using Blog.ViewModels.Categories;
 using Microsoft.AspNetCore.Mvc;
@@ -62,7 +63,7 @@ namespace Blog.Controllers
                 {
                     Id = 0,
                     Name = model.Name,
-                    Slug = model.Slug.ToLower()
+                    Slug = SlugUtils.GenerateSlug(model.Name)
                 };
                 await context.Categories.AddAsync(category);
                 await context.SaveChangesAsync();
@@ -91,7 +92,7 @@ namespace Blog.Controllers
                     return NotFound();
 
                 category.Name = model.Name;
-                category.Slug = model.Slug;
+                category.Slug = SlugUtils.GenerateSlug(model.Name);
 
                 context.Categories.Update(category);
                 await context.SaveChangesAsync();

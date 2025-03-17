@@ -49,7 +49,7 @@ namespace Blog.Controllers
                 $"Your password is <strong>{password}</strong>");
 
             if (!emailSend)
-                return StatusCode(500, "01KE05 - Erro ao enviar o e-mail de boas-vindas.");
+                return StatusCode(500, "01KE05 - Error sending the welcome email.");
 
             try
             {
@@ -96,7 +96,7 @@ namespace Blog.Controllers
             }
             catch
             {
-                return StatusCode(500, new ResultViewModel<string>("Internal server error"));
+                return StatusCode(500, new ResultViewModel<string>("01KE02 - Internal server failure"));
             }
         }
 
@@ -117,7 +117,7 @@ namespace Blog.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, new ResultViewModel<string>("Internal server error"));
+                return StatusCode(500, new ResultViewModel<string>("01KE02 - Internal server failure"));
             }
 
             var user = await context
@@ -136,7 +136,7 @@ namespace Blog.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, new ResultViewModel<string>("Internal server error"));
+                return StatusCode(500, new ResultViewModel<string>("01KE02 - Internal server failure"));
             }
 
             return Ok(new ResultViewModel<string>("Image altered successfully"));
