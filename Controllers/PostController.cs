@@ -6,6 +6,7 @@ using Blog.ViewModels.Posts;
 using Blog.ViewModels.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Blog.Controllers
 {
@@ -13,37 +14,55 @@ namespace Blog.Controllers
     {
         [HttpGet("v1/posts")]
         public async Task<IActionResult> GetAsync(
+            [FromServices] IMemoryCache cache,
             [FromServices] AppDataContext context,
             [FromQuery] int page = 0,
             [FromQuery] int pageSize = 10)
         {
-            var count = await context.Posts.AsNoTracking().CountAsync();
-            var posts = await context
-                .Posts
-                .AsNoTracking()
-                .Include(x => x.Category)
-                .Include(x => x.Author)
-                .Select(x => new ListPostsViewModel
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    Slug = x.Slug,
-                    LastUpdateDate = x.LastUpdateDate,
-                    Category = x.Category.Name,
-                    Author = $"{x.Author.Name} ({x.Author.Email})"
-                })
-                .Skip(page * pageSize)
-                .Take(pageSize)
-                .OrderByDescending(x => x.LastUpdateDate)
-                .ToListAsync();
-
-            return Ok(new ResultViewModel<dynamic>(new
+            try
             {
-                total = count,
-                page,
-                pageSize,
-                posts
-            }));
+                var count = await cache.GetOrCreateAsync("CountPostsCache", async entry =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                    return await context.Posts.AsNoTracking().CountAsync();
+                });
+                var postsCacheKey = $"PostsPageCache_{page}_{pageSize}";
+
+                var posts = await cache.GetOrCreateAsync(postsCacheKey, async entry =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                    return await context
+                    .Posts
+                    .AsNoTracking()
+                    .Include(x => x.Category)
+                    .Include(x => x.Author)
+                    .Select(x => new ListPostsViewModel
+                    {
+                        Id = x.Id,
+                        Title = x.Title,
+                        Slug = x.Slug,
+                        LastUpdateDate = x.LastUpdateDate,
+                        Category = x.Category.Name,
+                        Author = $"{x.Author.Name} ({x.Author.Email})"
+                    })
+                    .Skip(page * pageSize)
+                    .Take(pageSize)
+                    .OrderByDescending(x => x.LastUpdateDate)
+                    .ToListAsync();
+                });
+
+                return Ok(new ResultViewModel<dynamic>(new
+                {
+                    total = count,
+                    page,
+                    pageSize,
+                    posts
+                }));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new ResultViewModel<List<Category>>("01KE02 - Internal server failure"));
+            }
         }
 
         [HttpGet("v1/posts/{id:int}")]
